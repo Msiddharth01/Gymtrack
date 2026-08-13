@@ -15,20 +15,27 @@ function RootLayoutContent() {
   const rootNavigationState = useRootNavigationState();
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setInitializing(false);
+    }, 1500);
+
     const subscriber = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      if (initializing) {
-        setInitializing(false);
-      }
+      setInitializing(false);
+      clearTimeout(timer);
     });
-    return subscriber;
+
+    return () => {
+      clearTimeout(timer);
+      subscriber();
+    };
   }, []);
 
   useEffect(() => {
     if (initializing) return;
     if (!rootNavigationState?.key) return;
 
-    const inAuthGroup = segments[0] === 'auth';
+    const inAuthGroup = segments.some(s => s === 'auth' || s === 'login' || s === 'signup');
 
     if (!user && !inAuthGroup) {
       router.replace('/auth/login');
