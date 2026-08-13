@@ -33,7 +33,7 @@ function RootLayoutContent() {
     if (!user && !inAuthGroup) {
       router.replace('/auth/login');
     } else if (user && inAuthGroup) {
-      router.replace('/tracker');
+      router.replace('/(tabs)/tracker');
     }
 
   }, [user, initializing, segments, rootNavigationState?.key]);

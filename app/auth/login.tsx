@@ -22,9 +22,26 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const getErrorMessage = (error: any) => {
+    const code = error?.code || '';
+    if (code === 'auth/invalid-credential' || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
+      return "Invalid email or password. Please check your credentials and try again.";
+    }
+    if (code === 'auth/too-many-requests') {
+      return "Too many failed login attempts. Please wait a few minutes before trying again.";
+    }
+    if (code === 'auth/unauthorized-domain') {
+      return "Domain not authorized. Please add your web domain to Firebase Console > Authentication > Settings > Authorized domains.";
+    }
+    if (code === 'auth/invalid-email') {
+      return "Invalid email format. Please check your email address.";
+    }
+    return error?.message || "Failed to sign in. Please try again.";
+  };
+
   const handleLogin = async () => {
     if (!email || !email.includes('@')) {
-      Alert.alert("Invalid Email", "Please enter a valid email");
+      Alert.alert("Invalid Email", "Please enter a valid email address");
       return;
     }
 
@@ -36,12 +53,10 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
-      Alert.alert("Success", "Welcome back!");
-      router.replace('/tracker');
-
+      router.replace('/(tabs)/tracker');
     } catch (error: any) {
       console.log("LOGIN ERROR", error);
-      Alert.alert("Login Error", error.message);
+      Alert.alert("Login Failed", getErrorMessage(error));
     } finally {
       setLoading(false);
     }

@@ -36,13 +36,10 @@ export default function SignupScreen() {
 
       setLoading(true);
       await createUserWithEmailAndPassword(auth, email.trim(), password);
-
-      Alert.alert("Success", "Account created!");
-
-      router.replace("/tracker");
+      router.replace("/(tabs)/tracker");
 
     } catch (error: any) {
-      Alert.alert("Signup Error", error.message);
+      Alert.alert("Signup Error", error.message || "Failed to create account.");
     } finally {
       setLoading(false);
     }
